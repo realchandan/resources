@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Firebase demo</title>
+  </head>
+  <body>
+    <button id="btn1">
+      <h3>Click Me</h3>
+    </button>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+      import { getFirestore } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-firestore.js";
+      import {
+        getDatabase,
+        ref,
+        set,
+        onValue,
+        get,
+        update
+      } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCkSdZEuTSmxiI7z9JuK4hFz914YdSl6i4",
+        authDomain: "tutorial-6839b.firebaseapp.com",
+        databaseURL:
+          "https://tutorial-6839b-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "tutorial-6839b",
+        storageBucket: "tutorial-6839b.appspot.com",
+        messagingSenderId: "1096258507957",
+        appId: "1:1096258507957:web:78b10c99c08151b89d5afc"
+      };
+
+      const defaultProject = initializeApp(firebaseConfig);
+
+      console.log(defaultProject);
+
+      let defaultFirestore = getFirestore(defaultProject);
+      let defaultDatabase = getDatabase(defaultProject);
+
+      document
+        .getElementById("btn1")
+        .addEventListener("click", setSomeData, false);
+
+      let fruits_ref = ref(defaultDatabase, "fruits");
+
+      function setSomeData() {
+        set(fruits_ref, {
+          apple: "red",
+          banana: "yellow",
+          orange: "orange"
+        });
+      }
+
+      // get(fruits_ref)
+      //   .then((snapshot) => {
+      //     if (snapshot.exists()) {
+      //       console.log(snapshot.val());
+      //     } else {
+      //       console.log("No data available");
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     console.error(error);
+      //   });
+
+      // onValue(fruits_ref, (snapshot) => {
+      //   const data = snapshot.val();
+      //   console.log(data);
+      // });
+
+      update(fruits_ref, {
+        mango: "Red"
+      });
+    </script>
+  </body>
+</html>
