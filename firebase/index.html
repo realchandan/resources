@@ -11,14 +11,14 @@
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
       import { getFirestore } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-firestore.js";
-      import {
-        getDatabase,
-        ref,
-        set,
-        onValue,
-        get,
-        update
-      } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+      // import {
+      //   getDatabase,
+      //   ref,
+      //   set,
+      //   onValue,
+      //   get,
+      //   update
+      // } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyCkSdZEuTSmxiI7z9JuK4hFz914YdSl6i4",
@@ -35,22 +35,22 @@
 
       console.log(defaultProject);
 
-      let defaultFirestore = getFirestore(defaultProject);
-      let defaultDatabase = getDatabase(defaultProject);
+      // let defaultDatabase = getDatabase(defaultProject);
 
-      document
-        .getElementById("btn1")
-        .addEventListener("click", setSomeData, false);
+      // Realtime Database
+      // document
+      //   .getElementById("btn1")
+      //   .addEventListener("click", setSomeData, false);
 
-      let fruits_ref = ref(defaultDatabase, "fruits");
+      // let fruits_ref = ref(defaultDatabase, "fruits");
 
-      function setSomeData() {
-        set(fruits_ref, {
-          apple: "red",
-          banana: "yellow",
-          orange: "orange"
-        });
-      }
+      // function setSomeData() {
+      //   set(fruits_ref, {
+      //     apple: "red",
+      //     banana: "yellow",
+      //     orange: "orange"
+      //   });
+      // }
 
       // get(fruits_ref)
       //   .then((snapshot) => {
@@ -69,9 +69,11 @@
       //   console.log(data);
       // });
 
-      update(fruits_ref, {
-        mango: "Red"
-      });
+      // update(fruits_ref, {
+      //   mango: "Red"
+      // });
+
+      let defaultFirestore = getFirestore(defaultProject);
     </script>
   </body>
 </html>
