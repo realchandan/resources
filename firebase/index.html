@@ -10,7 +10,21 @@
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-      import { getFirestore } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-firestore.js";
+      import {
+        getFirestore,
+        collection,
+        doc,
+        addDoc,
+        setDoc,
+        query,
+        where,
+        limit,
+        getDoc,
+        getDocs,
+        updateDoc,
+        deleteDoc
+      } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-firestore.js";
+
       // import {
       //   getDatabase,
       //   ref,
@@ -33,7 +47,7 @@
 
       const defaultProject = initializeApp(firebaseConfig);
 
-      console.log(defaultProject);
+      // console.log(defaultProject);
 
       // let defaultDatabase = getDatabase(defaultProject);
 
@@ -73,7 +87,57 @@
       //   mango: "Red"
       // });
 
-      let defaultFirestore = getFirestore(defaultProject);
+      let db = getFirestore(defaultProject);
+
+      const docRef = doc(db, "users", "user1");
+      // Get a particular document
+      //
+      // const docSnap = await getDoc(docRef);
+      // if (docSnap.exists()) {
+      //   console.log("Document data:", docSnap.data());
+      // } else {
+      //   console.log("No such document!");
+      // }
+
+      // Set data
+      //
+      // await setDoc(doc(db, "users", "user2"), {
+      //   name: "Robert",
+      //   age: 30,
+      //   hobbies: ["Sports", "Cooking"]
+      // });
+
+      // Set a ton of documents
+      //
+      // fetch("https://jsonplaceholder.typicode.com/users")
+      //   .then((response) => response.json())
+      //   .then((json) => {
+      //     // console.log(json);
+      //     json.forEach(async (user) => {
+      //       console.log(user);
+      //       await addDoc(collection(db, "users"), user);
+      //     });
+      //   });
+
+      // Get multiple  documents
+      //
+      // const q = query(
+      //   collection(db, "users"),
+      //   where("name", "==", "Alice"),
+      //   limit(1)
+      // );
+      // const querySnapshot = await getDocs(q);
+      // querySnapshot.forEach((doc) => {
+      //   console.log(doc.id, " => ", doc.data());
+      // });
+
+      // Update
+      // await updateDoc(docRef, {
+      //   name: "Bob Johnson"
+      // });
+
+      // Delete
+      // await deleteDoc(docRef);
     </script>
   </body>
 </html>
