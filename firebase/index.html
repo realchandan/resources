@@ -20,16 +20,33 @@
       <button id="signup">
         <h3>Sign Up</h3>
       </button>
-      <br />
       <button id="login">
         <h3>Log In</h3>
       </button>
-      <br />
       <button id="logout">
         <h3>Log Out</h3>
       </button>
+      <br />
       <button id="display">
         <h3>display current user status</h3>
+      </button>
+      <br />
+      <button id="verify_email">
+        <h3>send verification email</h3>
+      </button>
+      <button id="forgot">
+        <h3>send password reset email</h3>
+      </button>
+      <br />
+      <button id="update_email">
+        <h3>update email</h3>
+      </button>
+      <button id="update_password">
+        <h3>update password</h3>
+      </button>
+      <br />
+      <button id="delete_user">
+        <h3>delete user</h3>
       </button>
     </div>
     <p id="status">Status -</p>
@@ -128,6 +145,72 @@
       }
 
       // stop_listening();
+
+      function verify_email() {
+        var email = document.getElementById("email").value;
+
+        sendEmailVerification(auth.currentUser)
+          .then(() => {
+            console.log("email sent");
+          })
+          .catch((e) => {
+            console.error(e);
+          });
+      }
+
+      function forgot() {
+        var email = document.getElementById("email").value;
+
+        sendPasswordResetEmail(auth, email)
+          .then(() => {
+            console.log("password reset email sent");
+          })
+          .catch((e) => {
+            console.error(e);
+          });
+      }
+
+      document.getElementById("verify_email").onclick = verify_email;
+      document.getElementById("forgot").onclick = forgot;
+
+      function update_email() {
+        var email = document.getElementById("email").value;
+
+        updateEmail(auth.currentUser, email)
+          .then(() => {
+            console.log("email updated");
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
+
+      function update_password() {
+        var password = document.getElementById("password").value;
+
+        updatePassword(auth.currentUser, password)
+          .then(() => {
+            console.log("password updated");
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
+
+      document.getElementById("update_email").onclick = update_email;
+      document.getElementById("update_password").onclick = update_password;
+
+      function delete_user() {
+        deleteUser(auth.currentUser)
+          .then(() => {
+            console.log("user was deleted");
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
+
+      document.getElementById("delete_user").onclick = delete_user;
     </script>
   </body>
 </html>
