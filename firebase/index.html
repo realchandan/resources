@@ -49,6 +49,11 @@
         <h3>delete user</h3>
       </button>
     </div>
+    <br />
+    <div>
+      <input type="file" id="filebtn" value="upload" />
+    </div>
+    <br />
     <p id="status">Status -</p>
 
     <script type="module">
@@ -61,13 +66,16 @@
         onAuthStateChanged,
         sendEmailVerification,
         sendPasswordResetEmail,
-        updateProfile,
         updateEmail,
         updatePassword,
-        deleteUser,
-        reauthenticateWithCredential,
-        signInAnonymously
+        deleteUser
       } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js";
+      import {
+        getStorage,
+        ref,
+        uploadBytes,
+        getDownloadURL
+      } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-storage.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyCkSdZEuTSmxiI7z9JuK4hFz914YdSl6i4",
@@ -91,6 +99,7 @@
       }
 
       function changestatus(status) {
+        console.log(status);
         document.getElementById("status").innerText = status;
       }
 
@@ -210,7 +219,30 @@
           });
       }
 
+      const storage = getStorage();
+
       document.getElementById("delete_user").onclick = delete_user;
+
+      var fileButton = document.getElementById("filebtn");
+      fileButton.addEventListener("change", (e) => {
+        var file = e.target.files[0];
+        var storageRef = ref(storage, "uploads/" + file.name);
+        uploadBytes(storageRef, file)
+          .then((snapshot) => {
+            changestatus("Uploaded a blob or file!");
+          })
+          .catch((e) => {
+            changestatus(e.message);
+          });
+      });
+
+      // getDownloadURL(ref(storage, "uploads/screenshot.jpg"))
+      //   .then((url) => {
+      //     changestatus(url);
+      //   })
+      //   .catch((e) => {
+      //     changestatus(e.message);
+      //   });
     </script>
   </body>
 </html>
