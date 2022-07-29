@@ -4,35 +4,53 @@
     <title>Firebase demo</title>
   </head>
   <body>
-    <button id="btn1">
-      <h3>Click Me</h3>
-    </button>
+    <div>
+      <div>
+        <p>Email</p>
+        <textarea id="email"></textarea>
+        <br />
+      </div>
+
+      <div>
+        <p>Password</p>
+        <textarea id="password"></textarea>
+        <br />
+      </div>
+
+      <button id="signup">
+        <h3>Sign Up</h3>
+      </button>
+      <br />
+      <button id="login">
+        <h3>Log In</h3>
+      </button>
+      <br />
+      <button id="logout">
+        <h3>Log Out</h3>
+      </button>
+      <button id="display">
+        <h3>display current user status</h3>
+      </button>
+    </div>
+    <p id="status">Status -</p>
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
       import {
-        getFirestore,
-        collection,
-        doc,
-        addDoc,
-        setDoc,
-        query,
-        where,
-        limit,
-        getDoc,
-        getDocs,
-        updateDoc,
-        deleteDoc
-      } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-firestore.js";
-
-      // import {
-      //   getDatabase,
-      //   ref,
-      //   set,
-      //   onValue,
-      //   get,
-      //   update
-      // } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged,
+        sendEmailVerification,
+        sendPasswordResetEmail,
+        updateProfile,
+        updateEmail,
+        updatePassword,
+        deleteUser,
+        reauthenticateWithCredential,
+        signInAnonymously
+      } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyCkSdZEuTSmxiI7z9JuK4hFz914YdSl6i4",
@@ -45,99 +63,71 @@
         appId: "1:1096258507957:web:78b10c99c08151b89d5afc"
       };
 
-      const defaultProject = initializeApp(firebaseConfig);
+      const project = initializeApp(firebaseConfig);
 
-      // console.log(defaultProject);
+      const auth = getAuth();
 
-      // let defaultDatabase = getDatabase(defaultProject);
+      function log_e_p() {
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
+        console.log(`email - ${email} & password - ${password}`);
+      }
 
-      // Realtime Database
-      // document
-      //   .getElementById("btn1")
-      //   .addEventListener("click", setSomeData, false);
+      function changestatus(status) {
+        document.getElementById("status").innerText = status;
+      }
 
-      // let fruits_ref = ref(defaultDatabase, "fruits");
+      function signup() {
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
 
-      // function setSomeData() {
-      //   set(fruits_ref, {
-      //     apple: "red",
-      //     banana: "yellow",
-      //     orange: "orange"
-      //   });
-      // }
+        createUserWithEmailAndPassword(auth, email, password)
+          .then((user) => {
+            console.log(user);
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
 
-      // get(fruits_ref)
-      //   .then((snapshot) => {
-      //     if (snapshot.exists()) {
-      //       console.log(snapshot.val());
-      //     } else {
-      //       console.log("No data available");
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     console.error(error);
-      //   });
+      function login() {
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
 
-      // onValue(fruits_ref, (snapshot) => {
-      //   const data = snapshot.val();
-      //   console.log(data);
-      // });
+        signInWithEmailAndPassword(auth, email, password)
+          .then((user) => {
+            console.log(user);
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
 
-      // update(fruits_ref, {
-      //   mango: "Red"
-      // });
+      function logout() {
+        signOut(auth);
+        console.log("user logged out");
+      }
 
-      let db = getFirestore(defaultProject);
+      function display() {
+        console.log(auth.currentUser);
+      }
 
-      const docRef = doc(db, "users", "user1");
-      // Get a particular document
-      //
-      // const docSnap = await getDoc(docRef);
-      // if (docSnap.exists()) {
-      //   console.log("Document data:", docSnap.data());
-      // } else {
-      //   console.log("No such document!");
-      // }
+      document.getElementById("signup").onclick = signup;
+      document.getElementById("login").onclick = login;
+      document.getElementById("logout").onclick = logout;
+      document.getElementById("display").onclick = display;
 
-      // Set data
-      //
-      // await setDoc(doc(db, "users", "user2"), {
-      //   name: "Robert",
-      //   age: 30,
-      //   hobbies: ["Sports", "Cooking"]
-      // });
+      var unlisten = auth.onAuthStateChanged((user) => {
+        if (user) {
+          console.log(user);
+        }
+      });
 
-      // Set a ton of documents
-      //
-      // fetch("https://jsonplaceholder.typicode.com/users")
-      //   .then((response) => response.json())
-      //   .then((json) => {
-      //     // console.log(json);
-      //     json.forEach(async (user) => {
-      //       console.log(user);
-      //       await addDoc(collection(db, "users"), user);
-      //     });
-      //   });
+      function stop_listening() {
+        unlisten();
+      }
 
-      // Get multiple  documents
-      //
-      // const q = query(
-      //   collection(db, "users"),
-      //   where("name", "==", "Alice"),
-      //   limit(1)
-      // );
-      // const querySnapshot = await getDocs(q);
-      // querySnapshot.forEach((doc) => {
-      //   console.log(doc.id, " => ", doc.data());
-      // });
-
-      // Update
-      // await updateDoc(docRef, {
-      //   name: "Bob Johnson"
-      // });
-
-      // Delete
-      // await deleteDoc(docRef);
+      // stop_listening();
     </script>
   </body>
 </html>
