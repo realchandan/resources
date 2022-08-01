@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Firebase demo</title>
+  </head>
+  <body>
+    <div>
+      <div>
+        <p>Email</p>
+        <textarea id="email"></textarea>
+        <br />
+      </div>
+
+      <div>
+        <p>Password</p>
+        <textarea id="password"></textarea>
+        <br />
+      </div>
+
+      <button id="signup">
+        <h3>Sign Up</h3>
+      </button>
+      <button id="login">
+        <h3>Log In</h3>
+      </button>
+      <button id="logout">
+        <h3>Log Out</h3>
+      </button>
+      <br />
+      <button id="display">
+        <h3>display current user status</h3>
+      </button>
+      <br />
+      <button id="verify_email">
+        <h3>send verification email</h3>
+      </button>
+      <button id="forgot">
+        <h3>send password reset email</h3>
+      </button>
+      <br />
+      <button id="update_email">
+        <h3>update email</h3>
+      </button>
+      <button id="update_password">
+        <h3>update password</h3>
+      </button>
+      <br />
+      <button id="delete_user">
+        <h3>delete user</h3>
+      </button>
+    </div>
+    <br />
+    <div>
+      <input type="file" id="filebtn" value="upload" />
+    </div>
+    <br />
+    <p id="status">Status -</p>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged,
+        sendEmailVerification,
+        sendPasswordResetEmail,
+        updateEmail,
+        updatePassword,
+        deleteUser
+      } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js";
+      import {
+        getStorage,
+        ref,
+        uploadBytes,
+        getDownloadURL
+      } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-storage.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCkSdZEuTSmxiI7z9JuK4hFz914YdSl6i4",
+        authDomain: "tutorial-6839b.firebaseapp.com",
+        databaseURL:
+          "https://tutorial-6839b-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "tutorial-6839b",
+        storageBucket: "tutorial-6839b.appspot.com",
+        messagingSenderId: "1096258507957",
+        appId: "1:1096258507957:web:78b10c99c08151b89d5afc"
+      };
+
+      const project = initializeApp(firebaseConfig);
+
+      const auth = getAuth();
+
+      function log_e_p() {
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
+        console.log(`email - ${email} & password - ${password}`);
+      }
+
+      function changestatus(status) {
+        console.log(status);
+        document.getElementById("status").innerText = status;
+      }
+
+      function signup() {
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
+
+        createUserWithEmailAndPassword(auth, email, password)
+          .then((user) => {
+            console.log(user);
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
+
+      function login() {
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
+
+        signInWithEmailAndPassword(auth, email, password)
+          .then((user) => {
+            console.log(user);
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
+
+      function logout() {
+        signOut(auth);
+        console.log("user logged out");
+      }
+
+      function display() {
+        console.log(auth.currentUser);
+      }
+
+      document.getElementById("signup").onclick = signup;
+      document.getElementById("login").onclick = login;
+      document.getElementById("logout").onclick = logout;
+      document.getElementById("display").onclick = display;
+
+      var unlisten = auth.onAuthStateChanged((user) => {
+        if (user) {
+          console.log(user);
+        }
+      });
+
+      function stop_listening() {
+        unlisten();
+      }
+
+      // stop_listening();
+
+      function verify_email() {
+        var email = document.getElementById("email").value;
+
+        sendEmailVerification(auth.currentUser)
+          .then(() => {
+            console.log("email sent");
+          })
+          .catch((e) => {
+            console.error(e);
+          });
+      }
+
+      function forgot() {
+        var email = document.getElementById("email").value;
+
+        sendPasswordResetEmail(auth, email)
+          .then(() => {
+            console.log("password reset email sent");
+          })
+          .catch((e) => {
+            console.error(e);
+          });
+      }
+
+      document.getElementById("verify_email").onclick = verify_email;
+      document.getElementById("forgot").onclick = forgot;
+
+      function update_email() {
+        var email = document.getElementById("email").value;
+
+        updateEmail(auth.currentUser, email)
+          .then(() => {
+            console.log("email updated");
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
+
+      function update_password() {
+        var password = document.getElementById("password").value;
+
+        updatePassword(auth.currentUser, password)
+          .then(() => {
+            console.log("password updated");
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
+
+      document.getElementById("update_email").onclick = update_email;
+      document.getElementById("update_password").onclick = update_password;
+
+      function delete_user() {
+        deleteUser(auth.currentUser)
+          .then(() => {
+            console.log("user was deleted");
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
+
+      const storage = getStorage();
+
+      document.getElementById("delete_user").onclick = delete_user;
+
+      var fileButton = document.getElementById("filebtn");
+      fileButton.addEventListener("change", (e) => {
+        var file = e.target.files[0];
+        var storageRef = ref(storage, "uploads/" + file.name);
+        uploadBytes(storageRef, file)
+          .then((snapshot) => {
+            changestatus("Uploaded a blob or file!");
+          })
+          .catch((e) => {
+            changestatus(e.message);
+          });
+      });
+
+      // getDownloadURL(ref(storage, "uploads/screenshot.jpg"))
+      //   .then((url) => {
+      //     changestatus(url);
+      //   })
+      //   .catch((e) => {
+      //     changestatus(e.message);
+      //   });
+    </script>
+  </body>
+</html>

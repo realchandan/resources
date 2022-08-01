@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "tutorial-6839b"
+  },
+  "targets": {
+    "tutorial-6839b": {
+      "hosting": {
+        "site2": [
+          "tutorial-54821651"
+        ],
+        "tutorial-6839b": [
+          "tutorial-6839b"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

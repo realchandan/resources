@@ -1,0 +1,14 @@
+{
+  "hosting": [
+    {
+      "target": "tutorial-6839b",
+      "public": "public",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    },
+    {
+      "target": "site2",
+      "public": "site2",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    }
+  ]
+}
