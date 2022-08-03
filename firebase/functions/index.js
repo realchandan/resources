@@ -120,3 +120,19 @@ todo_app.all("*", (req, res) => {
 });
 
 exports.app = functions.https.onRequest(todo_app);
+
+// auth triggers
+
+exports.userCreated = functions.auth.user().onCreate((user) => {
+  console.log(user);
+});
+
+exports.userDeleted = functions.auth.user().onDelete((user) => {
+  console.log(user);
+});
+
+exports.onUserDocumentCreate = functions.firestore
+  .document("users/{docId}")
+  .onCreate((snapshot, context) => {
+    console.log(snapshot.data());
+  });
