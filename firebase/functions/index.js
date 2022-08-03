@@ -119,7 +119,20 @@ todo_app.all("*", (req, res) => {
   res.send("whatever ur looking for is not here");
 });
 
-exports.app = functions.https.onRequest(todo_app);
+exports.app = functions
+  .runWith({
+    timeoutSeconds: 300,
+    memory: "1GB"
+  })
+  .https.onRequest(todo_app);
+
+exports.app2 = functions
+  .runWith({
+    timeoutSeconds: 300,
+    memory: "1GB"
+  })
+  .region("asia-south1")
+  .https.onRequest(todo_app);
 
 // auth triggers
 
