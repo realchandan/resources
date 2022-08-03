@@ -3,7 +3,13 @@
     {
       "target": "tutorial-6839b",
       "public": "public",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "/myapp/**",
+          "function": "app"
+        }
+      ]
     },
     {
       "target": "site2",
