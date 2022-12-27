@@ -40,17 +40,6 @@ async def ban_user(
     )
 
 
-@ban_user.error
-async def ban_user_error(interaction: Interaction, error):
-    await interaction.response.defer()
-    if isinstance(error, app_commands.MissingPermissions):
-        await interaction.followup.send(
-            "You don't have required permissions to run this command!"
-        )
-        return
-    await interaction.followup.send("Something went wrong!")
-
-
 @bot.tree.command(name="unban_user", guild=guild)
 @app_commands.checks.has_role(1056467619881959464)
 @app_commands.checks.has_permissions(ban_members=True)
@@ -62,19 +51,13 @@ async def unban_user(interaction: Interaction, user_id: str):
     await interaction.followup.send(f"{interaction.user.name} has been unbanned!")
 
 
-@unban_user.error
-async def unban_user_error(interaction: Interaction, error):
-    await interaction.response.defer()
-    if isinstance(error, app_commands.MissingPermissions):
-        await interaction.followup.send(
-            "You don't have required permissions to run this command!"
-        )
-    await interaction.followup.send("Something went wrong!")
-
-
 @bot.tree.command(name="kick_user", guild=guild)
-async def kick_user(interaction: Interaction):
-    await interaction.response.send_message(f"Hello {interaction.user.name}!")
+@app_commands.checks.has_role(1056467619881959464)
+@app_commands.checks.has_permissions(ban_members=True)
+async def kick_user(interaction: Interaction, user: Member):
+    await interaction.response.defer()
+    await interaction.guild.kick(user=Object(id=user.id))
+    await interaction.followup.send(f"{interaction.user.name} has been **KICKED**!")
 
 
 @bot.tree.command(name="ban_word", guild=guild)
@@ -87,4 +70,29 @@ async def unban_word(interaction: Interaction):
     await interaction.response.send_message(f"Hello {interaction.user.name}!")
 
 
-bot.run(environ.get("BOT_TOKEN"))
+async def _common_error_handler(interaction: Interaction, error):
+    await interaction.response.defer()
+    if isinstance(error, app_commands.MissingPermissions):
+        await interaction.followup.send(
+            "You don't have **required permissions** to run this command!"
+        )
+        return
+    if isinstance(error, app_commands.MissingRole):
+        await interaction.followup.send(
+            "You don't have **required roles** to run this command!"
+        )
+        return
+    if isinstance(error, app_commands.NoPrivateMessage):
+        await interaction.followup.send(
+            "You can't run this command in a DM chat/private chat!"
+        )
+        return
+    await interaction.followup.send("Something went wrong!")
+
+
+ban_user.error(_common_error_handler)
+unban_user.error(_common_error_handler)
+kick_user.error(_common_error_handler)
+
+if __name__ == "__main__":
+    bot.run(environ.get("BOT_TOKEN"))
