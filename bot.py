@@ -3,6 +3,7 @@ from os import environ
 from discord import Intents, Interaction, Object, Member, app_commands, Permissions
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
+from database import db, Word, Violations
 
 load_dotenv()
 
@@ -53,7 +54,7 @@ async def unban_user(interaction: Interaction, user_id: str):
 
 @bot.tree.command(name="kick_user", guild=guild)
 @app_commands.checks.has_role(1056467619881959464)
-@app_commands.checks.has_permissions(ban_members=True)
+@app_commands.checks.has_permissions(kick_members=True)
 async def kick_user(interaction: Interaction, user: Member):
     await interaction.response.defer()
     await interaction.guild.kick(user=Object(id=user.id))
@@ -61,13 +62,26 @@ async def kick_user(interaction: Interaction, user: Member):
 
 
 @bot.tree.command(name="ban_word", guild=guild)
-async def ban_word(interaction: Interaction):
-    await interaction.response.send_message(f"Hello {interaction.user.name}!")
+@app_commands.checks.has_role(1056467619881959464)
+async def ban_word(interaction: Interaction, word: str):
+    await interaction.response.defer()
+    db.merge(Word(banned_word=word))
+    db.commit()
+    await interaction.followup.send(f"{word} has been **BANNED** from now on!")
 
 
 @bot.tree.command(name="unban_word", guild=guild)
-async def unban_word(interaction: Interaction):
-    await interaction.response.send_message(f"Hello {interaction.user.name}!")
+@app_commands.checks.has_role(1056467619881959464)
+async def unban_word(interaction: Interaction, word: str):
+    await interaction.response.defer()
+    result = db.query(Word).filter(Word.banned_word == word).delete()
+    db.commit()
+    if result == 0:
+        await interaction.followup.send(
+            f"The given word is not banned thus no action taken!"
+        )
+        return
+    await interaction.followup.send(f"{word} was **UNBANNED**")
 
 
 async def _common_error_handler(interaction: Interaction, error):
@@ -93,6 +107,8 @@ async def _common_error_handler(interaction: Interaction, error):
 ban_user.error(_common_error_handler)
 unban_user.error(_common_error_handler)
 kick_user.error(_common_error_handler)
+ban_word.error(_common_error_handler)
+unban_word.error(_common_error_handler)
 
 if __name__ == "__main__":
     bot.run(environ.get("BOT_TOKEN"))
