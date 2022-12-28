@@ -1,13 +1,17 @@
 from os import environ
+from time import time
+from typing import List
 
-from discord import Intents, Interaction, Object, Member, app_commands, Permissions
+from discord import Intents, Interaction, Member, Message, Object, app_commands
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
-from database import db, Word, Violations
+
+from database import Violations, Word, db
 
 load_dotenv()
 
 intents = Intents.default()
+intents.message_content = True
 
 bot = Bot(command_prefix="!", intents=intents)
 
@@ -109,6 +113,46 @@ unban_user.error(_common_error_handler)
 kick_user.error(_common_error_handler)
 ban_word.error(_common_error_handler)
 unban_word.error(_common_error_handler)
+
+
+@bot.event
+async def on_message(message: Message):
+    if bot.user == message.author:
+        return
+
+    banned_words: List[Word] = db.query(Word).all()
+    message_has_violation = False
+    violated_word = ""
+
+    for x in banned_words:
+        if x.banned_word in message.content:
+            message_has_violation = True
+            violated_word = x.banned_word
+            break
+
+    if message_has_violation:
+        v = Violations()
+        v.user_id = message.author.id
+        v.timestamp = int(time())
+        v.word = violated_word
+        db.add(v)
+        db.commit()
+
+    results: List[Violations] = (
+        db.query(Violations).filter(Violations.user_id == message.author.id).all()
+    )
+    if len(results) >= 3:
+        await message.guild.kick(user=Object(id=message.author.id))
+        await message.channel.send(
+            f"<@{message.author.id}> has been **KICKED** because they have send more than 3 messages with violations!"
+        )
+        return
+
+    if message_has_violation:
+        await message.reply(
+            f"<@{message.author.id}> You are **warned** to not use **{violated_word}** again!"
+        )
+
 
 if __name__ == "__main__":
     bot.run(environ.get("BOT_TOKEN"))
